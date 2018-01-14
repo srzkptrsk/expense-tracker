@@ -3,10 +3,11 @@
 		"User": "",
 		"Password": "",
 		"Schema": "",
-		"Host": ""
+		"Host": "",
+		"Port": "3306"
 	},
 	"BotApi": "",
-	"Intro": "Expense Tracker - просты трэкер для выдаткаў. Для запісі выкарыстоўвайце наступны парадак - сума,катэгорыя. Напрыклад, -15,#gym",
-	"NotImplemented": "[не рэалізавана]",
-	"Added": "✓ дададзена"
+	"Intro": "Expense Tracker - simple expenses tracker. Example for record is -15,#gym or 15,#income",
+	"NotImplemented": "_[not implemented]_",
+	"Added": "_✓ added, %s_"
 }

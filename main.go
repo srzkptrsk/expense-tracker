@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -28,7 +29,7 @@ func main() {
 		log.Println("error:", err)
 	}
 
-	db, err := NewDB(conf.Db.User + ":" + conf.Db.Password + "@tcp(" + conf.Db.Host + ":3306)/" + conf.Db.Schema)
+	db, err := NewDB(conf.Db.User + ":" + conf.Db.Password + "@tcp(" + conf.Db.Host + ":" + conf.Db.Port + ")/" + conf.Db.Schema)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -38,7 +39,6 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	//bot.Debug = true
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -69,19 +69,20 @@ func main() {
 			log.Panic(err)
 		}
 
-		if update.Message.Text == "/balance" {
+		switch update.Message.Text {
+		case "/balance":
 			b, _ := GetBalance(env.DB, user.UserId)
 			if err != nil {
 				log.Panic(err)
 			}
 
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, ConvertBalance(b.CurrentBalance))
+			msg.ParseMode = "markdown"
 			bot.Send(msg)
 			continue
-		}
-
-		if update.Message.Text == "/log" {
+		case "/log":
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, conf.NotImplemented)
+			msg.ParseMode = "markdown"
 			bot.Send(msg)
 			continue
 		}
@@ -89,6 +90,7 @@ func main() {
 		result := strings.Split(update.Message.Text, ",")
 		if len(result) == 2 {
 			if result[0] != "" && result[1] != "" {
+				// convert amount to float
 				amount, err := strconv.ParseFloat(result[0], 64)
 				if err != nil {
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, err.Error())
@@ -96,6 +98,7 @@ func main() {
 					continue
 				}
 
+				// insert amount into db and throw error if it was unsuccessful
 				insertId, err := InsertAmount(env.DB, user.UserId, amount, strings.Trim(result[1], " "))
 				if err != nil {
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, err.Error())
@@ -103,9 +106,19 @@ func main() {
 					continue
 				}
 
+				// send reply message with status and balance
 				if insertId != 0 {
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, conf.Added)
+					// get balance
+					b, _ := GetBalance(env.DB, user.UserId)
+					if err != nil {
+						log.Panic(err)
+					}
+
+					msgToReply := fmt.Sprintf(conf.Added, ConvertBalance(b.CurrentBalance))
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgToReply)
 					msg.ReplyToMessageID = update.Message.MessageID
+					msg.ParseMode = "markdown"
+
 					bot.Send(msg)
 				}
 			}

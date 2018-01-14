@@ -12,6 +12,7 @@ type Db struct {
 	Password string
 	Schema   string
 	Host     string
+	Port     string
 }
 
 type Env struct {
