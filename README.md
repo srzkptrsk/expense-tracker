@@ -1,6 +1,8 @@
 # expense-tracker
 Expense Tracker - golang powered telegram bot for simple expense tracker
 
+![screenshot](https://piatrouski.xyz/uploads/2018-01-14_22-54-59.png)
+
 Create tables in your MySQL database:
 
     CREATE TABLE `money` (`money_id` int(10) unsigned NOT NULL AUTO_INCREMENT, `user_id` int(10) DEFAULT NULL, `amount` decimal(10,2) NOT NULL, `category` varchar(255) CHARACTER SET latin1 DEFAULT NULL, `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`money_id`), UNIQUE KEY `money_id_UNIQUE` (`money_id`)) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
