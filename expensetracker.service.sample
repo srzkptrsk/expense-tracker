@@ -1,0 +1,14 @@
+[Unit]
+Description=Expense Tracker
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/www/expensetracker_bot
+Restart=always
+RestartSec=3
+ExecStart=/var/www/expensetracker_bot/expense-tracker
+
+[Install]
+WantedBy=multi-user.target
